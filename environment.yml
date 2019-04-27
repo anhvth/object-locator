@@ -1,4 +1,4 @@
-name: tf-object-locator
+name: object-locator-tf
 channels:
   - defaults
 dependencies:
