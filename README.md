@@ -12,3 +12,6 @@ conda env create -f environment.yml
 conda activate object-locator-tf
 python train.py
 ```
+output sample:
+<img src="sample_outputs/sample_output.png" width="256px"/>
+
