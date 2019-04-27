@@ -6,20 +6,20 @@ import logging
 tf.keras.backend.set_learning_phase(1)
 
 def generaliz_mean(tensor, dim, p=-9, keepdims=False):
-	"""
-		Soft-min function, similar to softmax but min
-	"""
+    """
+        Soft-min function, similar to softmax but min
+    """
     res = (tensor+1e-6)**p
     res = tf.reduce_mean(res, axis=dim, keepdims=keepdims)
     res = res ** (1./p)
     return res
 
 def cdist(a, b):
-	"""
-		Caculate the euclid distance of every point in a to every point in b
-		|a| = n, |b|=m 
-		the expected returned matrix => [mxn]
-	"""
+    """
+        Caculate the euclid distance of every point in a to every point in b
+        |a| = n, |b|=m 
+        the expected returned matrix => [mxn]
+    """
     a = tf.cast(a, tf.float32)
     b = tf.cast(b, tf.float32)
 
@@ -29,12 +29,12 @@ def cdist(a, b):
     return distance
 
 def trim_invalid_value(tensor):
-	"""
-		When batching we add dummy value (-1), this function remove padded value for each sample 
-		Args:
-			tensor: a sample of a batch with padded value
-		return: tensor without padded value	
-	"""
+    """
+        When batching we add dummy value (-1), this function remove padded value for each sample 
+        Args:
+            tensor: a sample of a batch with padded value
+        return: tensor without padded value    
+    """
     mask = tf.reduce_mean(tf.cast(tensor>0, tf.float32), axis=-1)
     tensor = tf.boolean_mask(tensor, mask)
     return tensor
