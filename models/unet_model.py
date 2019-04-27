@@ -22,7 +22,7 @@ from .unet_parts import *
 class UNet(tf.keras.Model):
     def __init__(self,n_classes,
                  height, width,
-                 known_n_points=None):
+                 known_n_points=None, ngf=64):
         super(UNet, self).__init__()
 
 
@@ -31,23 +31,23 @@ class UNet(tf.keras.Model):
             raise ValueError('Minimum input image size is 256x256, got {}x{}'.\
                              format(height, width))
 
-        self.inc = inconv(64)
-        self.down1 = down(128)
-        self.down2 = down(256)
-        self.down3 = down(512)
-        self.down4 = down(512)
-        self.down5 = down(512)
-        self.down6 = down(512)
-        self.down7 = down(512)
-        self.down8 = down(512, normaliz=False)
-        self.up1 = up(512)
-        self.up2 = up(512)
-        self.up3 = up(512)
-        self.up4 = up(512)
-        self.up5 = up(256)
-        self.up6 = up(128)
-        self.up7 = up(64)
-        self.up8 = up(64, activ=False)
+        self.inc = inconv(ngf)
+        self.down1 = down(ngf*2)
+        self.down2 = down(ngf*2**2)
+        self.down3 = down(ngf*2**3)
+        self.down4 = down(ngf*2**3)
+        self.down5 = down(ngf*2**3)
+        self.down6 = down(ngf*2**3)
+        self.down7 = down(ngf*2**3)
+        self.down8 = down(ngf*2**3, normaliz=False)
+        self.up1 = up(ngf*2**3)
+        self.up2 = up(ngf*2**3)
+        self.up3 = up(ngf*2**3)
+        self.up4 = up(ngf*2**3)
+        self.up5 = up(ngf*2**2)
+        self.up6 = up(ngf*2)
+        self.up7 = up(ngf)
+        self.up8 = up(ngf, activ=False)
         self.outc = outconv(n_classes)
         self.out_nonlin = tf.keras.layers.Activation('sigmoid')
         
