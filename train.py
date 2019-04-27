@@ -1,7 +1,7 @@
 import tensorflow as tf
-import tf_losses
-import tf_data
-from models import tf_unet_model
+import losses
+import data
+from models import unet_model
 import pandas
 import logging
 import os
@@ -9,7 +9,7 @@ import cv2
 
 logger = logging.getLogger()
 #logger.setLevel(level=logging.DEBUG)
-print('tf_version: {}'.format(tf.__version__))
+print('version: {}'.format(tf.__version__))
 
 if __name__ == "__main__":
     nClass = 1
@@ -24,17 +24,17 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    model = tf_unet_model.UNet(nClass, height, width)
-    loss_loc = tf_losses.WeightedHausdorffDistance(
+    model = unet_model.UNet(nClass, height, width)
+    loss_loc = losses.WeightedHausdorffDistance(
         height, width, p=p, return_2_terms=True)
     # dataset
     df = pandas.read_json('./datasets/train/train.json')
     # df = df[:batch_size]
-    dataset = tf_data.create_dataset(df, batch_size, height, width)
+    dataset = data.create_dataset(df, batch_size, height, width)
     dataset = dataset.prefetch(100)
-    tf_iter = dataset.repeat(max_epochs).make_one_shot_iterator()
+    iter = dataset.repeat(max_epochs).make_one_shot_iterator()
 
-    imgs, locs, orig_sizes = tf_iter.get_next()
+    imgs, locs, orig_sizes = iter.get_next()
     # train ops
     prob_map = model(imgs)
     optimizer = tf.train.AdamOptimizer(lr, use_locking=True)
