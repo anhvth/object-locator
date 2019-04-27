@@ -49,8 +49,9 @@ class inconv(tf.keras.Model):
         self.conv = double_conv(out_ch)
 
     def call(self, x):
-        x = self.conv(x)
-        return x
+        out = self.conv(x)
+        logging.debug('inconv: {}->{}'.format(x.shape[1:], out.shape[1:]))
+        return out
 
 
 class down(tf.keras.Model):
@@ -63,9 +64,9 @@ class down(tf.keras.Model):
         )
 
     def call(self, x):
-        x = self.mpconv(x)
-        logging.debug('Downsample: {}'.format(x.shape[1:]))
-        return x
+        out = self.mpconv(x)
+        logging.debug('Downsample: {}->{}'.format(x.shape[1:], out.shape[1:]))
+        return out
 
 
 def up_bilinear(images):
@@ -83,9 +84,9 @@ class up(tf.keras.Model):
     def call(self, x1, x2):
         x1 = self.up(x1)
         x = tf.concat([x2, x1], axis=-1)
-        x = self.conv(x)
-        logging.debug('Upsample: {}'.format(x.shape[1:]))
-        return x
+        out = self.conv(x)
+        logging.debug('Upsample: {}->{}'.format(x.shape[1:], out.shape[1:]))
+        return out
 
 
 class outconv(tf.keras.Model):
@@ -94,8 +95,9 @@ class outconv(tf.keras.Model):
         self.conv = tf.keras.layers.Conv2D(out_ch, 1)
 
     def call(self, x):
-        x = self.conv(x)
-        return x
+        out = self.conv(x)
+        logging.debug('outconv: {}->{}'.format(x.shape[1:], out.shape[1:]))
+        return out
 
 
 """

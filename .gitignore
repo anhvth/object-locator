@@ -3,3 +3,4 @@ object-locator/samples_images/
 object-locator/checkpoints/
 **/.ipynb_checkpoints
 **/.DS_Store
+training_checkpoints/
