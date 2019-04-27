@@ -25,10 +25,10 @@ parser.add_argument('--max_epochs', default=int(10e5), help='num of max epoch ')
 parser.add_argument('--output_dir', default='training_checkpoints', help='directory to save model weights')
 parser.add_argument('--nClass', default=1, help='num of output channels')
 parser.add_argument('--batch_size', default=2, help='batch size')
-parser.add_argument('--max_to_keep', default=2, help='batch size')
-parser.add_argument('--ngf', type=int, default=64, help='batch size')
-parser.add_argument('--summary_freq', type=int, default=20, help='')
-parser.add_argument('--display_freq', type=int, default=100, help='')
+parser.add_argument('--max_to_keep', default=2, help='max keeping checkpoint')
+parser.add_argument('--ngf', type=int, default=64, help='init num of filter for unet')
+parser.add_argument('--summary_freq', type=int, default=20, help='scalars summary frequence')
+parser.add_argument('--display_freq', type=int, default=100, help='image summary frequence')
 
 
 
