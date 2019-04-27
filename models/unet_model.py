@@ -16,7 +16,7 @@ __version__ = "1.5.1"
 
 
 import tensorflow as tf
-from .tf_unet_parts import *
+from .unet_parts import *
 
 
 class UNet(tf.keras.Model):
