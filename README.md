@@ -12,7 +12,7 @@ conda env create -f environment.yml
 conda activate object-locator-tf
 python train.py
 ```
-to monitor the training process, by default the summary dir is in $args.output_dir/summary
+to monitor the training process, by default the summary dir is set to $args.output_dir/summary
 ```
 tensorboard --logdir training_checkpoints/summary/
 ```
