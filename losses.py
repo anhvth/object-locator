@@ -73,7 +73,7 @@ class WeightedHausdorffDistance():
 
         return term_1, term_2
 
-    def __call__(self, prob_map, labels, orig_sizes):
+    def __call__(self, prob_map, labels):
         """
             prob_map: [batch_size, 256, 256, 1]
             labels: [batch_size, None, 2] (list of x, y)
@@ -84,9 +84,9 @@ class WeightedHausdorffDistance():
         batch_size = tf.shape(prob_map)[0]
         cond = lambda i, m0, m1: tf.less(i, batch_size)
         def body(i, m0, m1):
-            prob_map_b, normalized_y, orig_size = prob_map[i], labels[i], orig_sizes[i]
+            prob_map_b, normalized_y = prob_map[i], labels[i]
             normalized_y = trim_invalid_value(normalized_y)
-            term_1, term_2 = self.forward_one_sample(prob_map_b, normalized_y, orig_size)
+            term_1, term_2 = self.forward_one_sample(prob_map_b, normalized_y)
             return i+1, m0+term_1, m1+term_2
 
         i, term_1, term_2 = tf.while_loop(
