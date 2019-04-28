@@ -50,15 +50,12 @@ class WeightedHausdorffDistance():
         self.p = p
         self.return_2_terms = return_2_terms
     
-    def forward_one_sample(self, prob_map_b, gt_b, orig_size):
-        h_norm_factor = orig_size[0] / self.height
-        w_norm_factor = orig_size[1] / self.width
-        norm_factor = tf.convert_to_tensor([[h_norm_factor, w_norm_factor]], dtype=tf.float32)
+    def forward_one_sample(self, prob_map_b, gt_b):
         
         prob_map_flat = tf.reshape(prob_map_b, [-1])
         
-        normalized_y = gt_b*norm_factor
-        normalized_x = self.all_img_locations*norm_factor
+        normalized_y = gt_b
+        normalized_x = self.all_img_locations
         d_matrix = cdist(normalized_x, normalized_y)
         #---term 1
         prob_map_flat = tf.reshape(prob_map_b, [-1])
