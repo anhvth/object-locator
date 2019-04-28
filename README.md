@@ -9,7 +9,7 @@ conda env create -f environment.yml
 ```
 # Training
 ```
-conda activate object-locator-tf
+conda activate object-locator
 python train.py
 ```
 to monitor the training process, by default the summary dir is set to $args.output_dir/summary
