@@ -78,8 +78,7 @@ if __name__ == "__main__":
     prob_map.set_shape([None, args.height, args.width])
 
     optimizer = tf.train.AdamOptimizer(args.lr, use_locking=True)
-
-    term1, term2 = loss_loc(prob_map, locs, orig_sizes)
+    term1, term2 = loss_loc(prob_map, locs)
     
     tf.summary.scalar('Term_1', term1)
     tf.summary.scalar('Term_2', term2)
