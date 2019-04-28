@@ -70,8 +70,13 @@ class WeightedHausdorffDistance():
                                   p=self.p,
                                   dim=0, keepdims=False)
         term_2 = tf.reduce_mean(minn)
+        #----- term3
+        total_pred = tf.reduce_mean(prob_map_b)
+        total_gt = tf.shape(gt_b)[0]
+        term_3 = tf.abs(total_pred-total_gt)
+        
 
-        return term_1, term_2
+        return term_1, term_2, term_3
 
     def __call__(self, prob_map, labels):
         """
@@ -79,28 +84,30 @@ class WeightedHausdorffDistance():
             labels: [batch_size, None, 2] (list of x, y)
         """
         i = 0
-        m0 = tf.convert_to_tensor(0, dtype=tf.float32)
-        m1 = tf.convert_to_tensor(0, dtype=tf.float32)
+        term_1_init = tf.convert_to_tensor(0, dtype=tf.float32)
+        term_2_init = tf.convert_to_tensor(0, dtype=tf.float32)
+        term_3_init = tf.convert_to_tensor(0, dtype=tf.float32)
         batch_size = tf.shape(prob_map)[0]
-        cond = lambda i, m0, m1: tf.less(i, batch_size)
-        def body(i, m0, m1):
+        cond = lambda i, term_1_init, term_2_init: tf.less(i, batch_size)
+        def body(i, term_1_init, term_2_init):
             prob_map_b, normalized_y = prob_map[i], labels[i]
             normalized_y = trim_invalid_value(normalized_y)
-            term_1, term_2 = self.forward_one_sample(prob_map_b, normalized_y)
-            return i+1, m0+term_1, m1+term_2
+            term_1, term_2, term_3 = self.forward_one_sample(prob_map_b, normalized_y)
+            return i+1, term_1_init+term_1, term_2_init+term_2, term_3_init+term_3
 
         i, term_1, term_2 = tf.while_loop(
             cond,
             body,
-            [i, m0, m1],
+            [i, term_1_init, term_2_init, term_3_init],
         )
         
         term_1 = term_1 / tf.cast(batch_size, tf.float32) 
         term_2 = term_2 / tf.cast(batch_size, tf.float32) 
+        term_3 = term_3 / tf.cast(batch_size, tf.float32) 
         
         if self.return_2_terms:
-            return term_1, term_2
+            return term_1, term_2, term_3
         else:
-            return term_1 + term_2
+            return term_1 + term_2 + term_3
 
     

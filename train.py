@@ -78,12 +78,13 @@ if __name__ == "__main__":
     prob_map.set_shape([None, args.height, args.width])
 
     optimizer = tf.train.AdamOptimizer(args.lr, use_locking=True)
-    term1, term2 = loss_loc(prob_map, locs)
+    term1, term2, term_3 = loss_loc(prob_map, locs)
     
     tf.summary.scalar('Term_1', term1)
     tf.summary.scalar('Term_2', term2)
+    tf.summary.scalar('Term_3', term3)
 
-    loss = term1 + term2
+    loss = term1 + term2+term_3
     global_step = tf.Variable(0, trainable=False, name='global_step')
     
     train_vars = [v for v in tf.trainable_variables() if v.name.startswith('unet')] 
@@ -120,7 +121,8 @@ if __name__ == "__main__":
             gstep = sess.run(global_step)
             train_dict = { 
                             'term1':term1, 
-                            'term2':term2, 
+                            'term2':term2,
+                            'term3':term3,
                             'train_step':train_step,
                         }
             if gstep % args.summary_freq == 0:
@@ -129,10 +131,11 @@ if __name__ == "__main__":
             if gstep % args.display_freq == 0:
                 train_dict['summary_image_op'] = summary_image_op
             run_results = sess.run(train_dict)
-            description = 'Epoch {}:{}-Term1: {:0.5f}, Term2:{:0.5f}'.format(epoch, 
+            description = 'Epoch {}:{}-Term1: {:0.5f}, Term2:{:0.5f}, Term2:{:0.5f}'.format(epoch, 
                                                                     step,
                                                                     run_results['term1'],
-                                                                    run_results['term2'])
+                                                                    run_results['term2'],
+                                                                    run_results['term3'])
             pbar.set_description(description)
             if gstep % args.summary_freq == 0:
                 train_writer.add_summary(run_results['merge_op'], gstep)
