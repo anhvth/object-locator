@@ -4,7 +4,7 @@ Tensorflow implementation for Weighted Hausdorff Distance: A Loss Function For O
 
 # Requerements 
 ```
-tensorflow.1.13.1
+tensorflow=1.13.1
 opencv
 tqdm
 ```

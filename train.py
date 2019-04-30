@@ -46,6 +46,12 @@ if __name__ == "__main__":
         args.display_freq = 5
         args.summary_freq = 2
 
+    print('---- hyper parameters>>>>>>>')
+    for k, v in args.__dict__.items():
+        print('{}: {}'.format(k, v))
+
+    print('<<<<<< hyper parameters')
+
     output_dir = os.path.join(args.output_dir, 'samples_images')
     checkpoint_dir = os.path.join(args.output_dir, 'checkpoints')
     summary_dir = os.path.join(args.output_dir, 'summary')
@@ -53,25 +59,20 @@ if __name__ == "__main__":
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(summary_dir, exist_ok=True)
 
+    # create model
     model = unet_model.UNet(args.nClass, args.height, args.width, ngf=args.ngf)
     loss_loc = losses.WeightedHausdorffDistance(
         args.height, args.width, p=args.p, return_2_terms=True)
-    # dataset
+   # create dataset
     df = pandas.read_json('./datasets/train/train.json')
     
-    print('---- hyper parameters>>>>>>>')
-
-    for k, v in args.__dict__.items():
-        print('{}: {}'.format(k, v))
-
-    print('<<<<<< hyper parameters')
 
     dataset = data.create_dataset(df, args.batch_size, args.height, args.width)
     dataset = dataset.prefetch(100)
     iter = dataset.repeat(args.max_epochs).make_one_shot_iterator()
 
     imgs, locs, orig_sizes = iter.get_next()
-    # train ops
+    # create train ops
     with tf.variable_scope('unet'):
         prob_map = model(imgs)
 
@@ -79,12 +80,11 @@ if __name__ == "__main__":
 
     optimizer = tf.train.AdamOptimizer(args.lr, use_locking=True)
     term1, term2, term_3 = loss_loc(prob_map, locs)
-    
     tf.summary.scalar('Term_1', term1)
     tf.summary.scalar('Term_2', term2)
     tf.summary.scalar('Term_3', term3)
 
-    loss = term1 + term2+term_3
+    loss = term1 + term2 + term_3
     global_step = tf.Variable(0, trainable=False, name='global_step')
     
     train_vars = [v for v in tf.trainable_variables() if v.name.startswith('unet')] 
@@ -95,8 +95,6 @@ if __name__ == "__main__":
     merge_op = tf.summary.merge_all()
 
 
-    # summary output image
-    # import ipdb; ipdb.set_trace()
     summary_image = [imgs[...,0 ], imgs[...,1], imgs[..., 2]*.3+prob_map*.7]
 
     summary_image = tf.stack(summary_image, axis=-1)
@@ -113,7 +111,6 @@ if __name__ == "__main__":
 
     train_writer = tf.summary.FileWriter(summary_dir, sess.graph)
 
-    # import ipdb; ipdb.set_trace()
     # training loop
     for epoch in range(args.max_epochs):
         pbar = tqdm(range(steps_per_epoch))
