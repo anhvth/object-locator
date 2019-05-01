@@ -10,6 +10,7 @@ import cv2
 import argparse
 import summary
 
+print('version: {}'.format(tf.__version__))
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True' # remove bug in macos https://github.com/dmlc/xgboost/issues/1715
 
@@ -36,7 +37,6 @@ args = parser.parse_args()
 
 logger = logging.getLogger()
 logger.setLevel(level=logging.DEBUG)
-print('version: {}'.format(tf.__version__))
 
 if __name__ == "__main__":
         
