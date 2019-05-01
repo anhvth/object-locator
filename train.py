@@ -36,7 +36,7 @@ parser.add_argument('--display_freq', type=int, default=100, help='image summary
 args = parser.parse_args()
 
 logger = logging.getLogger()
-logger.setLevel(level=logging.DEBUG)
+logger.setLevel(level=logging.INFO)
 
 if __name__ == "__main__":
         
@@ -79,18 +79,18 @@ if __name__ == "__main__":
     prob_map.set_shape([None, args.height, args.width])
 
     optimizer = tf.train.AdamOptimizer(args.lr, use_locking=True)
-    term1, term2, term_3 = loss_loc(prob_map, locs)
-    tf.summary.scalar('Term_1', term1)
-    tf.summary.scalar('Term_2', term2)
-    tf.summary.scalar('Term_3', term3)
+    term_1, term_2, term_3 = loss_loc(prob_map, locs)
+    tf.summary.scalar('Term_1', term_1)
+    tf.summary.scalar('Term_2', term_2)
+    tf.summary.scalar('Term_3', term_3)
 
-    loss = term1 + term2 + term_3
+    loss = term_1 + term_2 + term_3
     global_step = tf.Variable(0, trainable=False, name='global_step')
     
     train_vars = [v for v in tf.trainable_variables() if v.name.startswith('unet')] 
     print('Num of train var: {}'.format(len(train_vars)))
     grads_vars = optimizer.compute_gradients(loss, var_list=train_vars)
-    mean_grad = summary.get_mean_grad([gv[0] for gv in grads_vars])
+    mean_gr = summary.get_mean_grad([gv[0] for gv in grads_vars])
     tf.summary.scalar('mean_grad', mean_grad)
     merge_op = tf.summary.merge_all()
 
@@ -117,9 +117,9 @@ if __name__ == "__main__":
         for step in pbar: 
             gstep = sess.run(global_step)
             train_dict = { 
-                            'term1':term1, 
-                            'term2':term2,
-                            'term3':term3,
+                            'term_1':term_1, 
+                            'term_2':term_2,
+                            'term_3':term_3,
                             'train_step':train_step,
                         }
             if gstep % args.summary_freq == 0:
@@ -130,9 +130,9 @@ if __name__ == "__main__":
             run_results = sess.run(train_dict)
             description = 'Epoch {}:{}-Term1: {:0.5f}, Term2:{:0.5f}, Term2:{:0.5f}'.format(epoch, 
                                                                     step,
-                                                                    run_results['term1'],
-                                                                    run_results['term2'],
-                                                                    run_results['term3'])
+                                                                    run_results['term_1'],
+                                                                    run_results['term_2'],
+                                                                    run_results['term_3'])
             pbar.set_description(description)
             if gstep % args.summary_freq == 0:
                 train_writer.add_summary(run_results['merge_op'], gstep)

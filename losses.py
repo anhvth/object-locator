@@ -73,8 +73,8 @@ class WeightedHausdorffDistance():
         #----- term3
         total_pred = tf.reduce_mean(prob_map_b)
         total_gt = tf.shape(gt_b)[0]
+        total_gt = tf.cast(total_gt, tf.float32)
         term_3 = tf.abs(total_pred-total_gt)
-        
 
         return term_1, term_2, term_3
 
@@ -88,14 +88,14 @@ class WeightedHausdorffDistance():
         term_2_init = tf.convert_to_tensor(0, dtype=tf.float32)
         term_3_init = tf.convert_to_tensor(0, dtype=tf.float32)
         batch_size = tf.shape(prob_map)[0]
-        cond = lambda i, term_1_init, term_2_init: tf.less(i, batch_size)
-        def body(i, term_1_init, term_2_init):
+        cond = lambda i, term_1_init, term_2_init, term_3_init: tf.less(i, batch_size)
+        def body(i, term_1_init, term_2_init, term_3_init):
             prob_map_b, normalized_y = prob_map[i], labels[i]
             normalized_y = trim_invalid_value(normalized_y)
             term_1, term_2, term_3 = self.forward_one_sample(prob_map_b, normalized_y)
             return i+1, term_1_init+term_1, term_2_init+term_2, term_3_init+term_3
 
-        i, term_1, term_2 = tf.while_loop(
+        i, term_1, term_2, term_3 = tf.while_loop(
             cond,
             body,
             [i, term_1_init, term_2_init, term_3_init],
