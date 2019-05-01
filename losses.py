@@ -95,7 +95,7 @@ class WeightedHausdorffDistance():
             term_1, term_2, term_3 = self.forward_one_sample(prob_map_b, normalized_y)
             return i+1, term_1_init+term_1, term_2_init+term_2, term_3_init+term_3
 
-        i, term_1, term_2 = tf.while_loop(
+        i, term_1, term_2, term_3 = tf.while_loop(
             cond,
             body,
             [i, term_1_init, term_2_init, term_3_init],
