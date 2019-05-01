@@ -19,7 +19,7 @@ def create_dataset(dataframe, batch_size=2, height=256, width=256):
         orig_sizes = img.shape[:2]
         orig_sizes = np.array(orig_sizes, dtype=np.int32).reshape([2])
         img = cv2.resize(img, (256, 256))
-        img = img / 255
+        img = img / 127.5 - 1 
         img = img.astype(np.float32)
 
 
