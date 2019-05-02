@@ -2,7 +2,7 @@ from tqdm import tqdm
 import tensorflow as tf
 import losses
 import data
-from models import unet_model
+from models import unet_model, discriminator
 import pandas
 import logging
 import os
@@ -39,7 +39,6 @@ logger = logging.getLogger()
 logger.setLevel(level=logging.INFO)
 
 if __name__ == "__main__":
-        
     if args.mode == 'debug':
         args.ngf = 8
         # df = df[:args.batch_size]
@@ -61,6 +60,9 @@ if __name__ == "__main__":
 
     # create model
     model = unet_model.UNet(args.nClass, args.height, args.width, ngf=args.ngf)
+    discrim_model = discriminator.DiscrimCo
+
+
     loss_loc = losses.WeightedHausdorffDistance(
         args.height, args.width, p=args.p, return_2_terms=True)
    # create dataset
@@ -110,6 +112,7 @@ if __name__ == "__main__":
     steps_per_epoch = len(df)// args.batch_size
 
     train_writer = tf.summary.FileWriter(summary_dir, sess.graph)
+
 
     # training loop
     for epoch in range(args.max_epochs):
